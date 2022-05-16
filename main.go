@@ -13,6 +13,7 @@ import (
 )
 
 const ConfigPath = "config.json"
+const DbPath = "db.json"
 
 var CheckInterval int // check source interval in minutes
 
@@ -38,18 +39,18 @@ type ContentConf struct {
 }
 
 type Item struct {
-	title    string
-	source   string
-	contents []Content
+	Title    string    `json:"title"`
+	Source   string    `json:"source"`
+	Contents []Content `json:"contents"`
 }
 
 type Content struct {
-	name  string
-	value string
+	Name  string `json:"name"`
+	Value string `json:"value"`
 }
 
 func (i Item) equals(item Item) bool {
-	if i.title == item.title && contentArrayEqual(i.contents, item.contents) {
+	if i.Title == item.Title && contentArrayEqual(i.Contents, item.Contents) {
 		return true
 	}
 	return false
@@ -66,11 +67,11 @@ func (i Item) in(items []Item) bool {
 
 func (i Item) print() {
 	fmt.Println("========================================")
-	fmt.Printf("%-12s - %s\n", "Source", i.source)
-	fmt.Printf("%-12s - %s\n", "Title", i.title)
-	for _, content := range i.contents {
-		if len(content.value) != 0 {
-			fmt.Printf("%-12s - %s\n", content.name, content.value)
+	fmt.Printf("%-12s - %s\n", "Source", i.Source)
+	fmt.Printf("%-12s - %s\n", "Title", i.Title)
+	for _, content := range i.Contents {
+		if len(content.Value) != 0 {
+			fmt.Printf("%-12s - %s\n", content.Name, content.Value)
 		}
 	}
 	fmt.Println()
@@ -78,7 +79,7 @@ func (i Item) print() {
 
 func (c Content) in(contents []Content) bool {
 	// we don't compare URLs because it might be generated dynamically
-	if len(c.value) > 4 && c.value[:4] == "http" {
+	if len(c.Value) > 4 && c.Value[:4] == "http" {
 		return true
 	}
 	for _, content := range contents {
@@ -130,20 +131,20 @@ func checkSource(source SourceConf) (result []Item) {
 			doc.Find(source.ItemPath).Each(func(i int, s *goquery.Selection) {
 				var item Item
 				// Get title
-				item.title = strings.Trim(s.Find(source.TitlePath).Text(), " \t\r\n")
+				item.Title = strings.Trim(s.Find(source.TitlePath).Text(), " \t\r\n")
 				// Get custom contents
-				item.contents = make([]Content, len(source.Contents))
+				item.Contents = make([]Content, len(source.Contents))
 				for j, contentConf := range source.Contents {
-					item.contents[j].name = contentConf.Name
+					item.Contents[j].Name = contentConf.Name
 					switch contentConf.ContentType {
 					case "text":
-						item.contents[j].value = strings.Trim(s.Find(contentConf.Path).Text(), " \t\r\n")
+						item.Contents[j].Value = strings.Trim(s.Find(contentConf.Path).Text(), " \t\r\n")
 					case "url":
-						item.contents[j].value =
+						item.Contents[j].Value =
 							s.Find(contentConf.Path).AttrOr("href", "No link found!")
-						if len(item.contents[j].value) > 0 && item.contents[j].value[0] == '/' {
+						if len(item.Contents[j].Value) > 0 && item.Contents[j].Value[0] == '/' {
 							u, _ := url.Parse(source.Url)
-							item.contents[j].value = u.Scheme + "://" + u.Host + item.contents[j].value
+							item.Contents[j].Value = u.Scheme + "://" + u.Host + item.Contents[j].Value
 						}
 					case "list":
 						var tmp string
@@ -153,7 +154,7 @@ func checkSource(source SourceConf) (result []Item) {
 							}
 							tmp += listItem.FirstChild.Data
 						}
-						item.contents[j].value = tmp
+						item.Contents[j].Value = tmp
 					case "list-inline":
 						var tmp string
 						for i, listItem := range s.Find(contentConf.Path).Nodes {
@@ -162,11 +163,11 @@ func checkSource(source SourceConf) (result []Item) {
 							}
 							tmp += listItem.FirstChild.Data
 						}
-						item.contents[j].value = tmp
+						item.Contents[j].Value = tmp
 					}
 				}
-				if len(item.title) > 0 {
-					item.source = source.Name
+				if len(item.Title) > 0 {
+					item.Source = source.Name
 					result = append(result, item)
 				}
 			})
@@ -177,6 +178,9 @@ func checkSource(source SourceConf) (result []Item) {
 
 func checkDaemon(sources []SourceConf) {
 	db := make(map[string][]Item)
+	fileData, _ := ioutil.ReadFile(DbPath)
+	json.Unmarshal(fileData, &db)
+
 	for {
 		var toPrint []Item
 		for _, source := range sources {
@@ -200,6 +204,8 @@ func checkDaemon(sources []SourceConf) {
 			for _, item := range toPrint {
 				item.print()
 			}
+			data, _ := json.MarshalIndent(db, "", "    ")
+			ioutil.WriteFile(DbPath, data, 0777)
 		}
 		time.Sleep(time.Duration(CheckInterval) * time.Minute)
 	}
