@@ -1,9 +1,9 @@
 {
-  "checkInterval": 1,
+  "checkInterval": 30,
   "sources": [
     {
       "name": "JobsDB",
-      "active": true,
+      "active": false,
       "url": "https://hk.jobsdb.com/hk/search-jobs/marketing/1?Locations=1243%2C1244",
       "itemPath": "#jobList article",
       "titlePath": "h1 a",
@@ -28,7 +28,7 @@
     },
     {
       "name": "51Jobs",
-      "active": true,
+      "active": false,
       "url": "https://search.51job.com/list/030800,000000,0000,00,9,99,+,2,1.html?lang=c&postchannel=0000&workyear=99&cotype=01&degreefrom=99&jobterm=99&companysize=99&ord_field=0&dibiaoid=0&line=&welfare=",
       "itemPath": ".j_joblist .e",
       "titlePath": "span.jname.at",
@@ -57,6 +57,76 @@
         {
           "name": "Url",
           "path": "a.el",
+          "type": "url"
+        }
+      ]
+    },
+    {
+      "name": "猎聘",
+      "active": false,
+      "url": "https://www.liepin.com/zhaopin/?inputFrom=www_index&workYearCode=0&key=%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86&scene=hot_search&ckId=oj20krwru2u5y9nox4vgc412zncsrhmb",
+      "itemPath": ".job-card-left-box",
+      "titlePath": "div.job-title-box div:first-child",
+      "footerPath": "#common-footer",
+      "contents": [
+        {
+          "name": "Company",
+          "path": "span.company-name",
+          "type": "text"
+        },
+        {
+          "name": "Company type",
+          "path": ".company-tags-box span:first-child",
+          "type": "text"
+        },
+        {
+          "name": "Company Size",
+          "path": ".company-tags-box span:last-child",
+          "type": "text"
+        },
+        {
+          "name": "Salary",
+          "path": ".job-salary",
+          "type": "text"
+        },
+        {
+          "name": "Location",
+          "path": ".job-dq-box .ellipsis-1",
+          "type": "text"
+        },
+        {
+          "name": "Tags",
+          "path": ".job-labels-box span.labels-tag",
+          "type": "list-inline"
+        },
+        {
+          "name": "Url",
+          "path": "a[data-nick]",
+          "type": "url"
+        }
+      ]
+    },
+    {
+      "name": "Linkedin",
+      "active": true,
+      "url": "https://www.linkedin.com/jobs/search/?currentJobId=3052263436&geoId=103644278&keywords=software%20engineer&location=United%20States&refresh=true",
+      "itemPath": ".job-search-card",
+      "titlePath": "a span",
+      "footerPath": "footer",
+      "contents": [
+        {
+          "name": "Company",
+          "path": ".base-search-card__subtitle",
+          "type": "text"
+        },
+        {
+          "name": "Location",
+          "path": ".job-search-card__location",
+          "type": "text"
+        },
+        {
+          "name": "Url",
+          "path": "a.base-card__full-link",
           "type": "url"
         }
       ]
