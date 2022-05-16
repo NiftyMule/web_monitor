@@ -1,0 +1,65 @@
+{
+  "checkInterval": 1,
+  "sources": [
+    {
+      "name": "JobsDB",
+      "active": true,
+      "url": "https://hk.jobsdb.com/hk/search-jobs/marketing/1?Locations=1243%2C1244",
+      "itemPath": "#jobList article",
+      "titlePath": "h1 a",
+      "footerPath": "div.sx2jih0.zcydq8ci.ha1veg1",
+      "contents": [
+        {
+          "name": "Company",
+          "path": "h1 ~ span",
+          "type": "text"
+        },
+        {
+          "name": "Description",
+          "path": "ul li span",
+          "type": "list"
+        },
+        {
+          "name": "Url",
+          "path": "h1 a",
+          "type": "url"
+        }
+      ]
+    },
+    {
+      "name": "51Jobs",
+      "active": true,
+      "url": "https://search.51job.com/list/030800,000000,0000,00,9,99,+,2,1.html?lang=c&postchannel=0000&workyear=99&cotype=01&degreefrom=99&jobterm=99&companysize=99&ord_field=0&dibiaoid=0&line=&welfare=",
+      "itemPath": ".j_joblist .e",
+      "titlePath": "span.jname.at",
+      "footerPath": ".footer",
+      "contents": [
+        {
+          "name": "Company",
+          "path": ".er a.cname.at",
+          "type": "text"
+        },
+        {
+          "name": "Company Size",
+          "path": ".er p.dc.at",
+          "type": "text"
+        },
+        {
+          "name": "Salary",
+          "path": "p.info span.sal",
+          "type": "text"
+        },
+        {
+          "name": "Location",
+          "path": "p.info span.d.at",
+          "type": "text"
+        },
+        {
+          "name": "Url",
+          "path": "a.el",
+          "type": "url"
+        }
+      ]
+    }
+  ]
+}
